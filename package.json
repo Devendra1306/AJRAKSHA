@@ -2,13 +2,32 @@
   "name": "ajraksha",
   "version": "1.0.0",
   "description": "AI Agriculture Intelligence Platform",
+  "main": "api/index.js",
+  "engines": {
+    "node": ">=20.x"
+  },
   "scripts": {
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd server && npm run dev",
-    "dev": "start cmd /k \"cd client && npm run dev\" && start cmd /k \"cd server && npm run dev\"",
-    "install:all": "cd client && npm install && cd ../server && npm install"
+    "build": "cd client && npm install && npm run build",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
   },
   "keywords": ["agriculture", "ai", "farming", "india"],
   "author": "AJRAKSHA Team",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-validator": "^7.3.2",
+    "firebase-admin": "^14.1.0",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.11.0",
+    "multer": "^2.2.0",
+    "node-cache": "^5.1.2",
+    "pg": "^8.22.0"
+  }
 }
