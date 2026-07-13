@@ -5,12 +5,14 @@ const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 let messaging = null;
 
-/**
- * Lazily initialize FCM messaging (requires browser + service worker support)
- */
 const getMessagingInstance = () => {
+  if (!app) return null;
   if (!messaging && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-    messaging = getMessaging(app);
+    try {
+      messaging = getMessaging(app);
+    } catch (err) {
+      console.warn('FCM not supported or failed to initialize:', err);
+    }
   }
   return messaging;
 };

@@ -11,14 +11,22 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase only once (idempotent)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
-// Analytics only in browser
+let app = null;
 let analytics = null;
-if (typeof window !== 'undefined') {
-  getAnalytics(app).then ? null : null;
-  analytics = getAnalytics(app);
+
+const hasConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
+
+if (hasConfig) {
+  try {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    if (typeof window !== 'undefined') {
+      analytics = getAnalytics(app);
+    }
+  } catch (err) {
+    console.error('Failed to initialize Firebase SDK:', err);
+  }
+} else {
+  console.warn('⚠️ Firebase configuration is missing. Notifications and Analytics will be disabled.');
 }
 
 export { app, analytics };
