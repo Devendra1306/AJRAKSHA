@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crop Doctor | Ajraksha AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary": "#ffffff",
+                "on-primary": "#ffffff",
+                "on-secondary-fixed-variant": "#3f465c",
+                "on-background": "#251913",
+                "background": "#fff8f6",
+                "primary-fixed": "#ffdbca",
+                "on-primary-fixed": "#341100",
+                "surface-container-highest": "#f6ded3",
+                "on-surface-variant": "#584237",
+                "surface-variant": "#f6ded3",
+                "tertiary-fixed-dim": "#93ccff",
+                "on-tertiary-fixed-variant": "#004b74",
+                "surface-container": "#ffeae0",
+                "on-secondary-fixed": "#131b2e",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#dae2fd",
+                "on-secondary-container": "#5c647a",
+                "on-surface": "#251913",
+                "on-primary-container": "#582200",
+                "secondary-fixed": "#dae2fd",
+                "tertiary": "#006398",
+                "on-error-container": "#93000a",
+                "surface-tint": "#9d4300",
+                "tertiary-container": "#00a2f4",
+                "outline": "#8c7164",
+                "surface-dim": "#edd5cb",
+                "surface": "#fff8f6",
+                "inverse-surface": "#3c2d26",
+                "primary-container": "#f97316",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-low": "#fff1eb",
+                "on-primary-fixed-variant": "#783200",
+                "secondary-fixed-dim": "#bec6e0",
+                "inverse-on-surface": "#ffede6",
+                "error-container": "#ffdad6",
+                "inverse-primary": "#ffb690",
+                "surface-container-high": "#fce3d9",
+                "surface-bright": "#fff8f6",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#003554",
+                "outline-variant": "#e0c0b1",
+                "primary-fixed-dim": "#ffb690",
+                "secondary": "#565e74",
+                "on-error": "#ffffff",
+                "primary": "#9d4300",
+                "tertiary-fixed": "#cde5ff",
+                "on-tertiary-fixed": "#001d32"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "bento-gap": "1rem",
+                "card-padding": "1.5rem",
+                "container-margin": "2rem",
+                "section-gap": "4rem",
+                "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                "display-lg": ["Inter"],
+                "label-mono": ["Geist"],
+                "display-lg-mobile": ["Inter"],
+                "body-base": ["Inter"],
+                "stat-value": ["Inter"],
+                "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-base": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                "stat-value": ["32px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid #e0c0b1;
+            box-shadow: 0 4px 20px rgba(157, 67, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            box-shadow: 0 8px 30px rgba(157, 67, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .orange-glow {
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+        }
+        .orange-glow-strong {
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.25);
+        }
+        .progress-glow {
+            filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.3));
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fff8f6; }
+        ::-webkit-scrollbar-thumb { background: #e0c0b1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8c7164; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base overflow-x-hidden selection:bg-primary/20">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-outline-variant shadow-sm flex justify-between items-center px-container-margin py-4 w-full max-w-full mx-auto">
+<div class="flex items-center gap-12">
+<span class="font-display-lg text-[28px] font-bold text-primary tracking-tight">Ajraksha</span>
+<div class="hidden md:flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-base text-body-base" href="#">Dashboard</a>
+<a class="text-primary border-b-2 border-primary font-bold font-body-base text-body-base" href="#">AI Assistant</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-base text-body-base" href="#">Market</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-base text-body-base" href="#">Schemes</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl cursor-pointer hover:scale-110 transition-transform">account_circle</span>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 bg-surface-container-low border-r border-outline-variant flex flex-col p-4 gap-2 pt-24 hidden lg:flex">
+<div class="mb-8 px-2">
+<h2 class="font-headline-md text-headline-md text-primary font-bold">Crop Doctor</h2>
+<p class="text-on-surface-variant font-label-mono text-label-sm opacity-80">Laboratory Intelligence</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-xl transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-xl font-bold transition-all duration-200 shadow-md" href="#">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-label-md text-label-md">Crop Doctor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-xl transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">grass</span>
+<span class="font-label-md text-label-md">Soil</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-xl transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">cloudy_snowing</span>
+<span class="font-label-md text-label-md">Weather</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-xl transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">trending_up</span>
+<span class="font-label-md text-label-md">Market</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-xl transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">menu_book</span>
+<span class="font-label-md text-label-md">Diary</span>
+</a>
+</nav>
+<div class="mt-auto p-4 bg-primary/5 rounded-2xl border border-primary/10">
+<p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-1">Status</p>
+<p class="text-xs text-on-surface mb-3">Enterprise Access Active</p>
+<button class="w-full py-2 bg-primary text-white font-bold rounded-lg text-sm hover:orange-glow transition-all">Upgrade to Pro</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-28 px-container-margin pb-section-gap min-h-screen">
+<header class="mb-12 max-w-4xl">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-4">Crop Health Intelligence</h1>
+<p class="text-on-surface-variant text-lg leading-relaxed">Identify plant diseases instantly with 99.4% accuracy using our deep-learning diagnostic engine. Professional clinical reports generated in seconds.</p>
+</header>
+<div class="bento-grid">
+<!-- Upload Zone -->
+<section class="col-span-12 lg:col-span-8">
+<div class="glass-card rounded-[24px] p-12 border-2 border-dashed border-primary/20 flex flex-col items-center justify-center text-center cursor-pointer hover:border-primary/50 transition-all duration-500 bg-white group h-full min-h-[400px]" id="upload-zone">
+<div class="relative w-24 h-24 mb-6">
+<div class="absolute inset-0 bg-primary/10 rounded-full blur-xl group-hover:blur-2xl transition-all"></div>
+<div class="relative bg-surface-container rounded-full w-full h-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary text-5xl group-hover:scale-110 transition-transform">add_a_photo</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Upload Leaf Specimen</h3>
+<p class="text-on-surface-variant max-w-sm mb-8">Drag and drop high-resolution clinical photos of affected leaves. Supporting .jpg, .png, .heic (Max 25MB)</p>
+<button class="px-10 py-3.5 bg-primary text-white font-bold rounded-xl orange-glow-strong hover:bg-surface-tint transition-all active:scale-95 shadow-lg">Analyze Specimen</button>
+</div>
+</section>
+<!-- History Sidebar -->
+<section class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<div class="glass-card rounded-[24px] p-card-padding flex flex-col h-full max-h-[500px] bg-white">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold">Recent Diagnosis</h4>
+<span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer hover:text-primary">more_vert</span>
+</div>
+<div class="overflow-y-auto space-y-4 pr-2">
+<!-- History Item 1 -->
+<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container transition-colors cursor-pointer group border border-transparent hover:border-outline-variant">
+<div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Close up photography of a tomato leaf showing brown necrotic spots" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcy2jlp0A8NyTkMVRozBQ70-rKAFPb3deA1MLgtujRXWxj1yMn-PVUsITRCjHl-dqQtIfg0se7pxHNjQsnpFIMJdaOg3VJVJ7hGDRXYpVK1e1OzPyJfGWY2KTLcs3WS_dA8IsS6GAoRZDRTW31rwk_eUOmDY1W6bkAMnk_hTR_v37LsgtqZY5Wff2_i2SS-dg-fnk8ozF1NN_geCZTXxuAwBCacG3Aj-wuvBE6wQXA1rJftzVnmPmC7HlYjemvwRbuYPlqMatzOHK3"/>
+</div>
+<div class="flex-1">
+<h5 class="font-bold text-on-surface text-sm">Tomato Late Blight</h5>
+<p class="text-xs text-on-surface-variant">May 14, 2024 • 98% Conf.</p>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</div>
+<!-- History Item 2 -->
+<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container transition-colors cursor-pointer group border border-transparent hover:border-outline-variant">
+<div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Detail shot of a corn leaf with long grey lesions" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx-z87KcbM3_e5l5XJMw0uC46vfwtfTSJ19ARsO2c-TdnmQKxdTlKFhEdvuQ0Ui1wPHMLLf79D2CpWZhNAoVSsOh45eFmN0gtNpMB2z1i-2c2_TXNlNxT0ZF_7A-dSDfbtFO-ioU_WUb87-zeGvOPfnzBBGQhfJf5FUS2EmqeqRCyR-iRYg9WgfC7QZz6McYaW-pvRfsowWLi0ewKcAt8T2wClo5w5thWK7hpofh90V-U3XR9E4y5NGfeWdzj0Y-Ugeq2Klxmc25ym"/>
+</div>
+<div class="flex-1">
+<h5 class="font-bold text-on-surface text-sm">Maize Leaf Blight</h5>
+<p class="text-xs text-on-surface-variant">May 10, 2024 • 92% Conf.</p>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</div>
+<!-- History Item 3 -->
+<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container transition-colors cursor-pointer group border border-transparent hover:border-outline-variant">
+<div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A healthy green wheat leaf" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKwNN5Nd5GS3LNwL4tRh6BSxtTfXQ8xmw37FrBAE-VCyfF3_JDWxANI04_22y6IJRLg6ByfIo9Ws_yXNkedRoEQ2kiZVBb58KlxTvbDEowJYuP-WjSQqQnN38SzBmRODRcfiCi6N9U2nQqTBm2ZVsbjsVKl3qvLcWgkcV5g89fdPja9Kas1vCQI98ScMb0FoktxRe4CrJpG5dSfshkNGoyvLy6imhtgmhqXfjnNW5z-06gOTCmmdGa_YERd4JNPwAtz1FW5c8ScGRQ"/>
+</div>
+<div class="flex-1">
+<h5 class="font-bold text-on-surface text-sm">Healthy Sample</h5>
+<p class="text-xs text-on-surface-variant">May 02, 2024 • 100% Conf.</p>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</div>
+</div>
+<button class="mt-6 w-full py-3 text-primary font-bold text-label-md border border-primary/30 rounded-xl hover:bg-primary/5 transition-colors">VIEW ALL RECORDS</button>
+</div>
+</section>
+<!-- Prediction Result View -->
+<section class="col-span-12 bento-grid mt-12 hidden" id="result-view">
+<div class="col-span-12 lg:col-span-5 glass-card rounded-[24px] overflow-hidden bg-white">
+<div class="aspect-square relative">
+<img class="w-full h-full object-cover" data-alt="Detailed close-up of a diseased tomato leaf" id="analyzed-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByBx4gHfzhLWvrys_utl6fSiEgMfgGBNgYl7URjR6wf2ZjhhGPW6Si1LxFN6ytUAYDLWKe8PFNP0FBmDBhgsYCgfalzChiZlU18Sho4lJMD5LipqY0ySNcWI3n83pcfi-7qfSiWE8INTGN0_QP0OGD_WERzierLRc0aQByvoKeoD3_g8-Wnr0Z3eMT7z3NwDqMIMniG-ZjjbZmPvdHpN8bXFAiy4CV9PrdFhl805p6jg5x4uJu9r7GoQa7sPFq7NPrm_kZ7L_52VHd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white to-transparent opacity-40"></div>
+<div class="absolute bottom-6 left-6 right-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-1 bg-primary text-white rounded text-[10px] font-bold uppercase tracking-widest shadow-sm">Analysis Complete</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold bg-white/90 backdrop-blur inline-block px-3 py-1 rounded">Sample: #2849</h2>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-7 flex flex-col gap-6">
+<div class="glass-card rounded-[24px] p-card-padding bg-white">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="text-3xl font-bold text-on-surface mb-1">Tomato Late Blight</h3>
+<p class="text-primary font-label-mono text-label-md italic font-semibold">Phytophthora infestans</p>
+</div>
+<div class="text-right">
+<div class="text-4xl font-bold text-primary progress-glow" id="confidence-value">94%</div>
+<p class="text-on-surface-variant text-[10px] uppercase font-bold tracking-widest">Confidence Score</p>
+</div>
+</div>
+<!-- Animated Progress Bar -->
+<div class="w-full h-3 bg-surface-container rounded-full mb-10 overflow-hidden border border-outline-variant">
+<div class="h-full bg-primary transition-all duration-1000 ease-out" id="confidence-bar" style="width: 0%"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div>
+<h4 class="font-label-sm text-label-sm text-primary mb-4 flex items-center gap-2 font-bold tracking-wider uppercase">
+<span class="material-symbols-outlined text-sm">visibility</span> Clinical Symptoms
+                                </h4>
+<ul class="space-y-3 text-sm text-on-surface-variant">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+<span>Irregular, dark water-soaked spots on older leaves.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+<span>White velvety fungal growth on the underside.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+<span>Dark brown, firm lesions localized on stems.</span>
+</li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-sm text-label-sm text-secondary mb-4 flex items-center gap-2 font-bold tracking-wider uppercase">
+<span class="material-symbols-outlined text-sm">recommend</span> Treatment Protocol
+                                </h4>
+<div class="space-y-4">
+<div class="p-3 bg-primary/5 rounded-xl border border-primary/20">
+<p class="text-xs font-bold text-primary mb-1 uppercase tracking-tight">Biological Solution</p>
+<p class="text-sm text-on-surface">Apply Copper Fungicide spray every 7 days. Ensure vertical airflow.</p>
+</div>
+<div class="p-3 bg-secondary/5 rounded-xl border border-secondary/20">
+<p class="text-xs font-bold text-secondary mb-1 uppercase tracking-tight">Intervention</p>
+<p class="text-sm text-on-surface">Chlorothalonil application for clinical-grade containment.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant flex gap-4">
+<button class="flex-1 py-4 bg-primary text-white font-bold rounded-xl orange-glow hover:bg-surface-tint transition-all shadow-md">Export Laboratory Report</button>
+<button class="px-6 py-4 bg-white text-on-surface font-bold rounded-xl border border-outline-variant hover:bg-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap bg-surface-container-lowest border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-bento-gap px-container-margin">
+<div class="col-span-1 md:col-span-2">
+<span class="font-headline-md text-headline-md text-primary font-bold mb-4 block">Ajraksha AI</span>
+<p class="text-on-surface-variant max-w-sm mb-6 leading-relaxed">Precision diagnostics for a sustainable future. Empowering agricultural enterprise through laboratory-grade insights.</p>
+<p class="text-on-surface-variant/60 font-label-sm text-label-sm">© 2024 Ajraksha AI. Clinical Intelligence Platform.</p>
+</div>
+<div>
+<h4 class="font-bold text-on-surface mb-6 uppercase tracking-widest text-[10px]">Product Suite</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Lab Dashboard</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Crop Doctor AI</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Market Intelligence</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Soil Genetics</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-on-surface mb-6 uppercase tracking-widest text-[10px]">Documentation</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Methodology</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">API Protocol</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Safety Data</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Terms of Use</a></li>
+</ul>
+</div>
+</div>
+</footer>
+<script>
+        const uploadZone = document.getElementById('upload-zone');
+        const resultView = document.getElementById('result-view');
+        const confidenceBar = document.getElementById('confidence-bar');
+        const confidenceValue = document.getElementById('confidence-value');
+
+        uploadZone.addEventListener('click', () => {
+            // Simulate Upload
+            uploadZone.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <h3 class="text-xl font-bold text-primary">Sequencing Patterns...</h3>
+                    <p class="text-on-surface-variant mt-2 font-medium">Matching pathology against global database</p>
+                </div>
+            `;
+
+            setTimeout(() => {
+                uploadZone.classList.add('hidden');
+                resultView.classList.remove('hidden');
+                resultView.scrollIntoView({ behavior: 'smooth' });
+                
+                setTimeout(() => {
+                    confidenceBar.style.width = '94%';
+                    animateValue(confidenceValue, 0, 94, 1000);
+                }, 300);
+            }, 1800);
+        });
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start) + "%";
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body></html>

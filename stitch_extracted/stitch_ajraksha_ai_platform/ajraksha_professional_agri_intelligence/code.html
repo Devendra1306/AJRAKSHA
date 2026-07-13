@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ajraksha | AI-Powered Smart Agriculture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .luminous-border {
+            position: relative;
+        }
+        .luminous-border::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(to bottom right, rgba(249, 115, 22, 0.2), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        .orange-glow:hover {
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.25);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-secondary": "#ffffff",
+                "on-primary": "#ffffff",
+                "on-secondary-fixed-variant": "#3f465c",
+                "on-background": "#251913",
+                "background": "#fff8f6",
+                "primary-fixed": "#ffdbca",
+                "on-primary-fixed": "#341100",
+                "surface-container-highest": "#f6ded3",
+                "on-surface-variant": "#584237",
+                "surface-variant": "#f6ded3",
+                "tertiary-fixed-dim": "#93ccff",
+                "on-tertiary-fixed-variant": "#004b74",
+                "surface-container": "#ffeae0",
+                "on-secondary-fixed": "#131b2e",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#dae2fd",
+                "on-secondary-container": "#5c647a",
+                "on-surface": "#251913",
+                "on-primary-container": "#582200",
+                "secondary-fixed": "#dae2fd",
+                "tertiary": "#006398",
+                "on-error-container": "#93000a",
+                "surface-tint": "#9d4300",
+                "tertiary-container": "#00a2f4",
+                "outline": "#8c7164",
+                "surface-dim": "#edd5cb",
+                "surface": "#fff8f6",
+                "inverse-surface": "#3c2d26",
+                "primary-container": "#f97316",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-low": "#fff1eb",
+                "on-primary-fixed-variant": "#783200",
+                "secondary-fixed-dim": "#bec6e0",
+                "inverse-on-surface": "#ffede6",
+                "error-container": "#ffdad6",
+                "inverse-primary": "#ffb690",
+                "surface-container-high": "#fce3d9",
+                "surface-bright": "#fff8f6",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#003554",
+                "outline-variant": "#e0c0b1",
+                "primary-fixed-dim": "#ffb690",
+                "secondary": "#565e74",
+                "on-error": "#ffffff",
+                "primary": "#f97316",
+                "tertiary-fixed": "#cde5ff",
+                "on-tertiary-fixed": "#001d32"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "bento-gap": "1rem",
+                      "card-padding": "1.5rem",
+                      "container-margin": "2rem",
+                      "section-gap": "4rem",
+                      "gutter": "1.5rem"
+              },
+              "fontFamily": {
+                      "display-lg": ["Inter"],
+                      "label-mono": ["Geist"],
+                      "display-lg-mobile": ["Inter"],
+                      "body-base": ["Inter"],
+                      "stat-value": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-base": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                      "stat-value": ["32px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-base overflow-x-hidden">
+<!-- Immersive Shader Background -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background"></div>
+</div>
+<!-- Navigation Shell -->
+<header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-primary/10 shadow-sm">
+<div class="flex justify-between items-center px-container-margin py-4 w-full max-w-full mx-auto">
+<div class="flex items-center gap-4">
+<div class="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">agriculture</span>
+</div>
+<span class="font-display-lg text-headline-md font-bold text-primary tracking-tight">Ajraksha</span>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="font-body-base text-primary border-b-2 border-primary font-bold" href="#">Dashboard</a>
+<a class="font-body-base text-on-surface-variant hover:text-primary transition-colors" href="#">AI Assistant</a>
+<a class="font-body-base text-on-surface-variant hover:text-primary transition-colors" href="#">Market</a>
+<a class="font-body-base text-on-surface-variant hover:text-primary transition-colors" href="#">Schemes</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">search</button>
+<button class="material-symbols-outlined text-primary text-3xl">account_circle</button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative pt-32 pb-section-gap px-container-margin min-h-screen flex flex-col justify-center items-center overflow-hidden">
+<div class="max-w-4xl text-center z-10 animate-fade-up">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-mono text-label-mono text-primary uppercase tracking-widest">Next-Gen Agricultural Intelligence</span>
+</div>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-background mb-8">
+                AI-Powered <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-fixed-dim">Smart Agriculture</span> Platform
+            </h1>
+<p class="font-body-base text-on-surface-variant text-lg mb-12 max-w-2xl mx-auto">
+                Optimize your farm's performance with real-time predictive analytics, precision monitoring, and AI-driven insights tailored for large-scale agricultural enterprises.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold orange-glow transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+                    Explore Platform
+                </button>
+<button class="bg-white/50 backdrop-blur-md border border-primary/20 text-on-background px-8 py-4 rounded-xl font-bold hover:bg-white/80 transition-all duration-300 active:scale-95">
+                    Talk to AI
+                </button>
+</div>
+</div>
+<!-- Hero Stats Cards (Floating Bento) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-bento-gap mt-16 w-full max-w-6xl animate-fade-up delay-2">
+<!-- Crop Health -->
+<div class="glass-card luminous-border p-card-padding rounded-xl flex flex-col gap-2 transform transition-transform hover:-translate-y-2">
+<div class="flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase">Crop Health</span>
+<span class="material-symbols-outlined text-primary">eco</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-stat-value text-stat-value text-primary">98%</span>
+<span class="font-label-mono text-label-mono text-primary-fixed-dim mb-1">+2.4%</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden mt-2">
+<div class="h-full bg-primary" style="width: 98%"></div>
+</div>
+</div>
+<!-- Soil Score -->
+<div class="glass-card luminous-border p-card-padding rounded-xl flex flex-col gap-2 transform transition-transform hover:-translate-y-2">
+<div class="flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase">Soil Score</span>
+<span class="material-symbols-outlined text-primary">grass</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-stat-value text-stat-value text-on-background">Optimal</span>
+<span class="font-label-mono text-label-mono text-primary mb-1">Moist</span>
+</div>
+<div class="text-on-surface-variant text-sm mt-2">Nitrogen Levels: 85 mg/kg</div>
+</div>
+<!-- Market Prices -->
+<div class="glass-card luminous-border p-card-padding rounded-xl flex flex-col gap-2 transform transition-transform hover:-translate-y-2">
+<div class="flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase">Market Prices</span>
+<span class="material-symbols-outlined text-primary">trending_up</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-stat-value text-stat-value text-on-background">Up 12%</span>
+<span class="font-label-mono text-label-mono text-primary mb-1">Soybeans</span>
+</div>
+<div class="text-on-surface-variant text-sm mt-2">Predicted High: $15.42/bu</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-section-gap px-container-margin">
+<div class="max-w-7xl mx-auto">
+<h2 class="font-display-lg text-headline-md mb-12 text-center text-on-background">Intelligent Core Capabilities</h2>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-bento-gap">
+<!-- Large Feature: AI Monitoring -->
+<div class="md:col-span-8 glass-card luminous-border rounded-xl p-card-padding relative overflow-hidden group">
+<div class="relative z-10">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">biotech</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4 text-on-background">Precision AI Monitoring</h3>
+<p class="font-body-base text-on-surface-variant max-w-md">
+                            Utilize hyper-spectral satellite imagery and ground-level sensors to detect nutrient deficiencies, pests, and hydration levels before they impact yield.
+                        </p>
+</div>
+<div class="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform translate-x-1/4 translate-y-1/4">
+<span class="material-symbols-outlined text-[200px] text-primary">monitoring</span>
+</div>
+</div>
+<!-- Small Feature: Weather -->
+<div class="md:col-span-4 glass-card luminous-border rounded-xl p-card-padding flex flex-col">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">thunderstorm</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4 text-on-background">Weather Intelligence</h3>
+<p class="font-body-base text-on-surface-variant">
+                        Hyper-local micro-climate forecasting integrated directly into your planting and harvest schedules.
+                    </p>
+</div>
+<!-- Small Feature: Market Insights -->
+<div class="md:col-span-4 glass-card luminous-border rounded-xl p-card-padding flex flex-col">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">insights</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4 text-on-background">Market Analytics</h3>
+<p class="font-body-base text-on-surface-variant">
+                        Real-time global commodity tracking and predictive price modeling for maximum ROI on your harvest.
+                    </p>
+</div>
+<!-- Large Feature: Automation -->
+<div class="md:col-span-8 glass-card luminous-border rounded-xl p-card-padding relative overflow-hidden group">
+<div class="relative z-10">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">smart_toy</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4 text-on-background">Autonomous Coordination</h3>
+<p class="font-body-base text-on-surface-variant max-w-md">
+                            Sync your fleet of smart tractors, drones, and irrigation systems with a unified AI conductor for hands-free operational excellence.
+                        </p>
+</div>
+<div class="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform translate-x-1/4 translate-y-1/4">
+<span class="material-symbols-outlined text-[200px] text-primary">settings_suggest</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="py-section-gap px-container-margin bg-surface-container-low/30">
+<div class="max-w-5xl mx-auto">
+<h2 class="font-display-lg text-headline-md mb-16 text-center text-on-background">Seamless Integration Flow</h2>
+<div class="space-y-12">
+<!-- Step 1 -->
+<div class="flex items-start gap-8 group">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center font-bold text-primary bg-white group-hover:bg-primary group-hover:text-white transition-colors duration-300">1</div>
+<div class="w-0.5 h-24 bg-gradient-to-b from-primary to-transparent"></div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md mb-2 text-on-background">Deploy Sensors</h3>
+<p class="font-body-base text-on-surface-variant">Quickly connect your IoT hardware and satellite feeds to the Ajraksha cloud platform.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-8 group">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center font-bold text-primary bg-white group-hover:bg-primary group-hover:text-white transition-colors duration-300">2</div>
+<div class="w-0.5 h-24 bg-gradient-to-b from-primary to-transparent"></div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md mb-2 text-on-background">Analyze Data</h3>
+<p class="font-body-base text-on-surface-variant">Our proprietary ML models process millions of data points to create a digital twin of your farm.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-8 group">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center font-bold text-primary bg-white group-hover:bg-primary group-hover:text-white transition-colors duration-300">3</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md mb-2 text-on-background">Execute Strategy</h3>
+<p class="font-body-base text-on-surface-variant">Receive actionable daily commands via the dashboard or automate them directly via hardware integration.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Dashboard Preview Mockup -->
+<section class="py-section-gap px-container-margin overflow-hidden">
+<div class="max-w-7xl mx-auto">
+<div class="glass-card luminous-border rounded-3xl p-4 md:p-8 relative transform perspective-1000 rotate-x-2 border-primary/20">
+<div class="bg-white rounded-2xl overflow-hidden border border-primary/10 shadow-2xl">
+<!-- Fake Dashboard Header -->
+<div class="h-16 border-b border-primary/10 flex items-center px-6 justify-between bg-surface-container-low">
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-full bg-red-400"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+<div class="w-3 h-3 rounded-full bg-green-400"></div>
+</div>
+<div class="bg-primary/5 px-4 py-1 rounded text-xs font-label-mono uppercase tracking-wider text-primary">Central Command v4.2</div>
+</div>
+<!-- Dashboard Content -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
+<div class="md:col-span-1 space-y-4">
+<div class="h-24 bg-surface-container rounded-xl"></div>
+<div class="h-48 bg-surface-container rounded-xl"></div>
+</div>
+<div class="md:col-span-2 space-y-4">
+<div class="h-80 bg-gradient-to-br from-primary/5 to-primary-fixed/30 rounded-2xl border border-primary/10 flex items-center justify-center overflow-hidden">
+<div class="text-center">
+<span class="material-symbols-outlined text-6xl text-primary/30 animate-bounce">satellite_alt</span>
+<p class="mt-4 font-label-mono text-on-surface-variant">LIVE SAT-FEED 04</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-1 space-y-4">
+<div class="h-40 bg-surface-container rounded-xl"></div>
+<div class="h-32 bg-surface-container rounded-xl"></div>
+</div>
+</div>
+</div>
+<!-- AI Insight Chip Floating -->
+<div class="absolute -top-6 -right-6 md:top-12 md:-right-12 bg-primary px-6 py-3 rounded-full shadow-xl z-20 transform rotate-6 border border-white/20">
+<span class="text-white font-bold flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                        AI Recommendation: Increase Irrigation in Sector 7
+                    </span>
+</div>
+</div>
+</div>
+</section>
+<!-- Shared Footer -->
+<footer class="w-full py-section-gap bg-surface-container-low border-t border-primary/10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-bento-gap px-container-margin max-w-7xl mx-auto">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<div class="h-8 w-8 bg-primary/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">agriculture</span>
+</div>
+<span class="font-headline-md text-headline-md text-primary font-bold">Ajraksha</span>
+</div>
+<p class="font-body-base text-on-surface-variant text-sm">
+                    Empowering Intelligent Vitality through advanced agricultural science and digital orchestration.
+                </p>
+<div class="flex gap-4 mt-2">
+<a class="text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Product</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Resources</a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-mono text-label-mono text-primary uppercase">Contact Us</h4>
+<p class="font-body-base text-on-surface-variant text-sm">info@ajraksha.ai</p>
+<p class="font-body-base text-on-surface-variant text-sm">+1 (555) AGRI-TECH</p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-mono text-label-mono text-primary uppercase">Legal</h4>
+<a class="text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-mono text-label-mono text-primary uppercase">Newsletter</h4>
+<div class="flex gap-2">
+<input class="bg-white border-primary/10 rounded-lg px-4 py-2 text-sm focus:ring-primary focus:border-primary w-full" placeholder="Email address" type="email"/>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg material-symbols-outlined">send</button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-container-margin mt-16 pt-8 border-t border-primary/10 flex flex-col md:flex-row justify-between items-center gap-4">
+<span class="font-body-base text-on-surface-variant text-sm">© 2024 Ajraksha AI. Empowering Intelligent Vitality.</span>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">public</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">linked_camera</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">terminal</span>
+</div>
+</div>
+</footer>
+<!-- Micro-Interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Intersection Observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-up');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Add animation classes and observe
+            const elementsToAnimate = document.querySelectorAll('h2, .glass-card, .flex.items-start.group');
+            elementsToAnimate.forEach((el, index) => {
+                el.style.opacity = '0';
+                observer.observe(el);
+            });
+
+            // Smooth parallax effect for floating cards
+            document.addEventListener('mousemove', (e) => {
+                const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+                const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+                
+                document.querySelectorAll('.glass-card').forEach((card, index) => {
+                    const depth = (index + 1) * 0.2;
+                    card.style.transform = `translate(${moveX * depth}px, ${moveY * depth}px)`;
+                });
+            });
+        });
+    </script>
+</body></html>
