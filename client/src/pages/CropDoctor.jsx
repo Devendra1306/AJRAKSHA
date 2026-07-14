@@ -81,6 +81,14 @@ export default function CropDoctor() {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
         {/* Upload / Result Section */}
         <section>
+          <input 
+            type="file" 
+            ref={fileRef} 
+            onChange={handleFileChange} 
+            onClick={(e) => e.stopPropagation()}
+            accept="image/jpeg, image/png, image/heic" 
+            style={{ display: 'none' }} 
+          />
           
             {uploadState === 'idle' && (
               <div
@@ -114,18 +122,16 @@ export default function CropDoctor() {
                 <p style={{ fontSize: 15, color: '#584237', lineHeight: 1.6, maxWidth: 360, marginBottom: 32 }}>
                   Drag and drop high-resolution clinical photos of affected leaves. Supporting .jpg, .png, .heic (Max 25MB)
                 </p>
-                <input 
-                  type="file" 
-                  ref={fileRef} 
-                  onChange={handleFileChange} 
-                  accept="image/jpeg, image/png, image/heic" 
-                  style={{ display: 'none' }} 
-                />
-                <button style={{
-                  padding: '14px 40px', background: '#f97316', color: 'white',
-                  border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: 'pointer',
-                  boxShadow: '0 8px 20px rgba(249,115,22,0.3)', transition: 'all 0.2s ease',
-                }}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileRef.current?.click();
+                  }}
+                  style={{
+                    padding: '14px 40px', background: '#f97316', color: 'white',
+                    border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: 'pointer',
+                    boxShadow: '0 8px 20px rgba(249,115,22,0.3)', transition: 'all 0.2s ease',
+                  }}
                   onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.1)'}
                   onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
                 >
