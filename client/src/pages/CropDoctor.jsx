@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 const recentDiagnosis = [
   { name: 'Tomato Late Blight', date: 'May 14, 2024', conf: '98%', img: null },
   { name: 'Maize Leaf Blight', date: 'May 10, 2024', conf: '92%', img: null },
@@ -7,13 +9,62 @@ const recentDiagnosis = [
 ]
 
 export default function CropDoctor() {
-  const [uploadState, setUploadState] = useState('idle') // idle | analyzing | result
+  const [uploadState, setUploadState] = useState('idle') // idle | analyzing | result | error
+  const [resultData, setResultData] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [errorMsg, setErrorMsg] = useState('')
   const fileRef = useRef(null)
 
-  const handleAnalyze = () => {
-    setUploadState('analyzing')
-    setTimeout(() => setUploadState('result'), 2000)
-  }
+  const processFile = async (file) => {
+    if (!file) return;
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => setSelectedImage(e.target.result);
+    reader.readAsDataURL(file);
+
+    setUploadState('analyzing');
+    setErrorMsg('');
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/ai/crop/analyze`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Analysis failed. Please try again.');
+      }
+
+      const data = await response.json();
+      setResultData(data);
+      setUploadState('result');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || 'An error occurred during analysis');
+      setUploadState('error');
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      processFile(e.target.files[0]);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div style={{ padding: 32, paddingBottom: 80 }}>
@@ -35,7 +86,9 @@ export default function CropDoctor() {
               <div
                 key="upload"
                 className="glass-card"
-                onClick={handleAnalyze}
+                onClick={() => fileRef.current?.click()}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
                 style={{
                   borderRadius: 24, padding: 64, minHeight: 400,
                   border: '2px dashed rgba(249,115,22,0.2)',
@@ -61,6 +114,13 @@ export default function CropDoctor() {
                 <p style={{ fontSize: 15, color: '#584237', lineHeight: 1.6, maxWidth: 360, marginBottom: 32 }}>
                   Drag and drop high-resolution clinical photos of affected leaves. Supporting .jpg, .png, .heic (Max 25MB)
                 </p>
+                <input 
+                  type="file" 
+                  ref={fileRef} 
+                  onChange={handleFileChange} 
+                  accept="image/jpeg, image/png, image/heic" 
+                  style={{ display: 'none' }} 
+                />
                 <button style={{
                   padding: '14px 40px', background: '#f97316', color: 'white',
                   border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: 'pointer',
@@ -97,15 +157,35 @@ export default function CropDoctor() {
               </div>
             )}
 
-            {uploadState === 'result' && (
+            {uploadState === 'error' && (
+              <div
+                key="error"
+                className="glass-card"
+                style={{
+                  borderRadius: 24, padding: 64, minHeight: 400,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  textAlign: 'center',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 64, color: '#ef4444', marginBottom: 24 }}>error</span>
+                <h3 style={{ fontSize: 22, fontWeight: 700, color: '#251913', marginBottom: 8 }}>Analysis Failed</h3>
+                <p style={{ fontSize: 15, color: '#584237', marginBottom: 32 }}>{errorMsg}</p>
+                <button onClick={() => setUploadState('idle')} style={{
+                  padding: '14px 40px', background: '#f97316', color: 'white',
+                  border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: 'pointer',
+                }}>Try Again</button>
+              </div>
+            )}
+
+            {uploadState === 'result' && resultData && (
               <div
                 key="result"
                 style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 20 }}
               >
                 {/* Image */}
                 <div className="glass-card" style={{ borderRadius: 24, overflow: 'hidden' }}>
-                  <div style={{ aspectRatio: '1/1', position: 'relative', background: 'linear-gradient(135deg, #fce3d9, #fff1eb)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 80, color: 'rgba(249,115,22,0.3)' }}>local_florist</span>
+                  <div style={{ aspectRatio: '1/1', position: 'relative', background: 'linear-gradient(135deg, #fce3d9, #fff1eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundImage: selectedImage ? `url(${selectedImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                    {!selectedImage && <span className="material-symbols-outlined" style={{ fontSize: 80, color: 'rgba(249,115,22,0.3)' }}>local_florist</span>}
                     <div style={{ position: 'absolute', bottom: 24, left: 24, right: 24 }}>
                       <span style={{ padding: '4px 10px', background: '#f97316', color: 'white', borderRadius: 4, fontSize: 10, fontWeight: 700, fontFamily: 'Geist, monospace', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Analysis Complete</span>
                       <h2 style={{ fontSize: 18, fontWeight: 700, color: '#251913', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', padding: '4px 12px', borderRadius: 6, display: 'inline-block', marginTop: 8 }}>Sample: #2849</h2>
@@ -117,11 +197,11 @@ export default function CropDoctor() {
                 <div className="glass-card" style={{ borderRadius: 24, padding: 24 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
                     <div>
-                      <h3 style={{ fontSize: 26, fontWeight: 700, color: '#251913', marginBottom: 4 }}>Tomato Late Blight</h3>
-                      <p style={{ fontSize: 13, color: '#f97316', fontFamily: 'Geist, monospace', fontStyle: 'italic' }}>Phytophthora infestans</p>
+                      <h3 style={{ fontSize: 26, fontWeight: 700, color: '#251913', marginBottom: 4 }}>{resultData.disease}</h3>
+                      <p style={{ fontSize: 13, color: '#f97316', fontFamily: 'Geist, monospace', fontStyle: 'italic' }}>Severity: {resultData.severity} | Crop: {resultData.crop}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 36, fontWeight: 700, color: '#f97316' }}>94%</div>
+                      <div style={{ fontSize: 36, fontWeight: 700, color: '#f97316' }}>{resultData.confidence}%</div>
                       <p style={{ fontSize: 10, color: '#584237', fontFamily: 'Geist, monospace', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Confidence Score</p>
                     </div>
                   </div>
@@ -129,7 +209,7 @@ export default function CropDoctor() {
                   {/* Progress bar */}
                   <div style={{ height: 10, background: '#fce3d9', borderRadius: 5, overflow: 'hidden', marginBottom: 24 }}>
                     <div
-                      style={{ height: '100%', background: '#f97316', borderRadius: 5 }}
+                      style={{ height: '100%', background: '#f97316', borderRadius: 5, width: `${resultData.confidence}%` }}
                     />
                   </div>
 
@@ -139,7 +219,7 @@ export default function CropDoctor() {
                         <span className="material-symbols-outlined" style={{ fontSize: 14 }}>visibility</span> Clinical Symptoms
                       </h4>
                       <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {['Irregular, dark water-soaked spots on older leaves.', 'White velvety fungal growth on underside.', 'Dark brown lesions localized on stems.'].map((s, i) => (
+                        {resultData.symptoms?.map((s, i) => (
                           <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 13, color: '#584237' }}>
                             <span className="material-symbols-outlined" style={{ color: '#f97316', fontSize: 18, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24", flexShrink: 0, marginTop: 1 }}>check_circle</span>
                             {s}
@@ -153,23 +233,23 @@ export default function CropDoctor() {
                       </h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                         <div style={{ padding: 12, background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.15)', borderRadius: 10 }}>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: '#f97316', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Biological Solution</p>
-                          <p style={{ fontSize: 12, color: '#251913', lineHeight: 1.5 }}>Apply Copper Fungicide spray every 7 days. Ensure vertical airflow.</p>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: '#f97316', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Organic Solution</p>
+                          <p style={{ fontSize: 12, color: '#251913', lineHeight: 1.5 }}>{resultData.organicSolution || 'N/A'}</p>
                         </div>
                         <div style={{ padding: 12, background: 'rgba(86,94,116,0.06)', border: '1px solid rgba(86,94,116,0.15)', borderRadius: 10 }}>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: '#565e74', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Intervention</p>
-                          <p style={{ fontSize: 12, color: '#251913', lineHeight: 1.5 }}>Chlorothalonil application for clinical-grade containment.</p>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: '#565e74', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Chemical Solution</p>
+                          <p style={{ fontSize: 12, color: '#251913', lineHeight: 1.5 }}>{resultData.chemicalSolution || 'N/A'}</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', gap: 12, marginTop: 20, borderTop: '1px solid #e0c0b1', paddingTop: 20 }}>
-                    <button style={{
+                    <button onClick={() => { setUploadState('idle'); setSelectedImage(null); setResultData(null); }} style={{
                       flex: 1, padding: '14px 0', background: '#f97316', color: 'white',
                       border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 14, cursor: 'pointer',
                       boxShadow: '0 4px 12px rgba(249,115,22,0.3)', transition: 'all 0.2s ease',
-                    }}>Export Laboratory Report</button>
+                    }}>Scan Another Specimen</button>
                     <button className="btn-outline" style={{ padding: '14px 16px', borderRadius: 12 }}>
                       <span className="material-symbols-outlined">share</span>
                     </button>
