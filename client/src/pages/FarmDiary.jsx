@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react'
 
-const staticEntries = [
-  { type: 'expense', icon: 'shopping_cart', label: 'Fertilizer Purchase', crop: 'Wheat', amount: 4200, date: 'Jul 5', color: '#ba1a1a' },
-  { type: 'income', icon: 'payments', label: 'Wheat Sale - Mandi', crop: 'Wheat', amount: 28400, date: 'Jul 3', color: '#16a34a' },
-  { type: 'expense', icon: 'water_drop', label: 'Irrigation Cost', crop: 'Rice', amount: 1800, date: 'Jul 1', color: '#ba1a1a' },
-  { type: 'income', icon: 'payments', label: 'Rice Sale - Direct', crop: 'Rice', amount: 15600, date: 'Jun 28', color: '#16a34a' },
-  { type: 'expense', icon: 'local_shipping', label: 'Transport to Mandi', crop: 'Cotton', amount: 900, date: 'Jun 25', color: '#ba1a1a' },
-]
-
 export default function FarmDiary() {
   const [activeTab, setActiveTab] = useState('all')
   const [dbEntries, setDbEntries] = useState([])
@@ -32,7 +24,7 @@ export default function FarmDiary() {
     fetchDiary();
   }, []);
 
-  const mappedDbEntries = dbEntries.map(e => ({
+  const entries = dbEntries.map(e => ({
     type: e.type,
     icon: e.type === 'income' ? 'payments' : e.type === 'expense' ? 'shopping_cart' : 'local_florist',
     label: e.description,
@@ -42,7 +34,6 @@ export default function FarmDiary() {
     color: e.type === 'income' ? '#16a34a' : e.type === 'expense' ? '#ba1a1a' : '#f97316'
   }));
 
-  const entries = [...mappedDbEntries, ...staticEntries];
   const totalIncome = entries.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0)
   const totalExpense = entries.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0)
 
@@ -100,38 +91,42 @@ export default function FarmDiary() {
         </div>
 
         <div>
-          {filtered.map((entry, i) => (
-            <div key={i}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 16, padding: '16px 24px',
-                borderBottom: '1px solid rgba(224,192,177,0.3)', cursor: 'pointer', transition: 'background 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = '#fff8f6'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-            >
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: entry.type === 'income' ? 'rgba(22,163,74,0.1)' : entry.type === 'expense' ? 'rgba(186,26,26,0.1)' : 'rgba(249,115,22,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ color: entry.color, fontSize: 22 }}>{entry.icon}</span>
+          {filtered.length === 0 ? (
+            <p style={{ fontSize: 14, color: '#8c7164', textAlign: 'center', padding: '48px 0' }}>No diary entries found.</p>
+          ) : (
+            filtered.map((entry, i) => (
+              <div key={i}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 16, padding: '16px 24px',
+                  borderBottom: '1px solid rgba(224,192,177,0.3)', cursor: 'pointer', transition: 'background 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#fff8f6'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: entry.type === 'income' ? 'rgba(22,163,74,0.1)' : entry.type === 'expense' ? 'rgba(186,26,26,0.1)' : 'rgba(249,115,22,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span className="material-symbols-outlined" style={{ color: entry.color, fontSize: 22 }}>{entry.icon}</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, color: '#251913', fontSize: 14 }}>{entry.label}</p>
+                  <p style={{ fontSize: 12, color: '#584237', marginTop: 2 }}>{entry.crop} · {entry.date}</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  {entry.type !== 'activity' && (
+                    <p style={{ fontSize: 18, fontWeight: 700, color: entry.color }}>
+                      {entry.type === 'income' ? '+' : '-'}₹{entry.amount.toLocaleString()}
+                    </p>
+                  )}
+                  <span style={{
+                    fontSize: 10, padding: '2px 8px', borderRadius: 4, fontFamily: 'Geist, monospace', fontWeight: 600,
+                    background: entry.type === 'income' ? 'rgba(22,163,74,0.1)' : entry.type === 'expense' ? 'rgba(186,26,26,0.1)' : 'rgba(249,115,22,0.1)',
+                    color: entry.color,
+                  }}>
+                    {entry.type.toUpperCase()}
+                  </span>
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontWeight: 600, color: '#251913', fontSize: 14 }}>{entry.label}</p>
-                <p style={{ fontSize: 12, color: '#584237', marginTop: 2 }}>{entry.crop} · {entry.date}</p>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                {entry.type !== 'activity' && (
-                  <p style={{ fontSize: 18, fontWeight: 700, color: entry.color }}>
-                    {entry.type === 'income' ? '+' : '-'}₹{entry.amount.toLocaleString()}
-                  </p>
-                )}
-                <span style={{
-                  fontSize: 10, padding: '2px 8px', borderRadius: 4, fontFamily: 'Geist, monospace', fontWeight: 600,
-                  background: entry.type === 'income' ? 'rgba(22,163,74,0.1)' : entry.type === 'expense' ? 'rgba(186,26,26,0.1)' : 'rgba(249,115,22,0.1)',
-                  color: entry.color,
-                }}>
-                  {entry.type.toUpperCase()}
-                </span>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
