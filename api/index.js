@@ -62,6 +62,7 @@ app.use(async (req, res, next) => {
 });
 
 // ── Routes ────────────────────────────────────────────────────────────────────
+// ponytail: mount at both /api/ai and /ai — Vercel strips /api prefix from req.url when calling api/index.js
 app.use('/api/auth',          require('../server/routes/auth'));
 app.use('/api/ai',            require('../server/routes/ai'));
 app.use('/api/crop',          require('../server/routes/ai'));
@@ -70,6 +71,15 @@ app.use('/api/weather',       require('../server/routes/weather'));
 app.use('/api/schemes',       require('../server/routes/schemes'));
 app.use('/api/diary',         require('../server/routes/diary'));
 app.use('/api/notifications', require('../server/routes/notifications'));
+
+app.use('/auth',          require('../server/routes/auth'));
+app.use('/ai',            require('../server/routes/ai'));
+app.use('/crop',          require('../server/routes/ai'));
+app.use('/market',        require('../server/routes/market'));
+app.use('/weather',       require('../server/routes/weather'));
+app.use('/schemes',       require('../server/routes/schemes'));
+app.use('/diary',         require('../server/routes/diary'));
+app.use('/notifications', require('../server/routes/notifications'));
 
 app.get('/api/health', (_req, res) =>
   res.json({ status: 'OK', timestamp: new Date().toISOString(), service: 'AJRAKSHA API' })
