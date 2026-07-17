@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'; // ponytail: relative URL works dev (Vite proxy) + prod (Vercel rewrite)
 
 const recentDiagnosis = [
   { name: 'Tomato Late Blight', date: 'May 14, 2024', conf: '98%', img: null },
