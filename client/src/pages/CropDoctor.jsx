@@ -2,6 +2,12 @@ import { useState, useRef, useEffect } from 'react'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'; // ponytail: relative URL works dev (Vite proxy) + prod (Vercel rewrite)
 
+const staticDiagnosis = [
+  { name: 'Tomato Late Blight', date: 'May 14, 2024', conf: '98%', img: null },
+  { name: 'Maize Leaf Blight', date: 'May 10, 2024', conf: '92%', img: null },
+  { name: 'Healthy Sample', date: 'May 02, 2024', conf: '100%', img: null },
+]
+
 export default function CropDoctor() {
   const [uploadState, setUploadState] = useState('idle') // idle | analyzing | result | error
   const [resultData, setResultData] = useState(null)
@@ -294,7 +300,43 @@ export default function CropDoctor() {
 
             <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
               {reports.length === 0 ? (
-                <p style={{ fontSize: 13, color: '#8c7164', textAlign: 'center', padding: '20px 0' }}>No recent scans found.</p>
+                staticDiagnosis.map((item, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 12,
+                    border: '1px solid transparent', cursor: 'pointer', transition: 'all 0.2s ease',
+                  }}
+                    onClick={() => {
+                      const mockData = {
+                        disease: item.name,
+                        confidence: parseFloat(item.conf) || 100,
+                        severity: 'Moderate',
+                        crop: item.name.split(' ')[0],
+                        symptoms: ['Irregular water-soaked spots', 'Velvety fungal growth', 'Dark brown lesions'],
+                        organicSolution: 'Apply Copper Fungicide spray',
+                        chemicalSolution: 'Chlorothalonil application'
+                      };
+                      setResultData(mockData);
+                      setSelectedImage(null);
+                      setUploadState('result');
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#ffeae0'; e.currentTarget.style.borderColor = '#e0c0b1' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }}
+                  >
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+                      background: 'linear-gradient(135deg, #fce3d9, #fff1eb)',
+                      border: '1px solid #e0c0b1',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <span className="material-symbols-outlined" style={{ color: 'rgba(249,115,22,0.5)', fontSize: 28 }}>local_florist</span>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h5 style={{ fontWeight: 700, color: '#251913', fontSize: 14 }}>{item.name}</h5>
+                      <p style={{ fontSize: 12, color: '#584237', marginTop: 2 }}>{item.date} • {item.conf} Conf.</p>
+                    </div>
+                    <span className="material-symbols-outlined" style={{ color: '#f97316', fontSize: 18, opacity: 0 }} className="chevron">chevron_right</span>
+                  </div>
+                ))
               ) : (
                 reports.map((item, i) => (
                   <div key={i} style={{
