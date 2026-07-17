@@ -14,7 +14,7 @@ const getKey = () => {
   return key;
 };
 
-const chat = async ({ messages, model = 'google/gemini-flash-1.5', stream = false, temperature = 0.7 }) => {
+const chat = async ({ messages, model = 'google/gemini-2.5-flash', stream = false, temperature = 0.7 }) => {
   let lastError;
   
   for (let i = 0; i < KEYS.length; i++) {
@@ -42,7 +42,7 @@ const chat = async ({ messages, model = 'google/gemini-flash-1.5', stream = fals
   throw lastError || new Error("All API keys exhausted. AI service is down.");
 };
 
-const chatWithVision = async ({ text, imageBase64, model = 'google/gemini-flash-1.5' }) => {
+const chatWithVision = async ({ text, imageBase64, model = 'google/gemini-2.5-flash' }) => {
   const response = await chat({
     messages: [{
       role: 'user',
@@ -62,7 +62,7 @@ const analyzeWithSchema = async (prompt, systemPrompt) => {
       { role: 'system', content: systemPrompt },
       { role: 'user', content: prompt }
     ],
-    model: 'google/gemini-flash-1.5',
+    model: 'google/gemini-2.5-flash',
     temperature: 0.3,
   });
   const text = response.data.choices[0].message.content;
