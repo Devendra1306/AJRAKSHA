@@ -97,9 +97,9 @@ CRITICAL INSTRUCTIONS FOR YOUR TONE AND LANGUAGE:
 
 exports.analyzeCrop = async (req, res, next) => {
   try {
-    const imageBuffer = req.file?.buffer;
-    if (!imageBuffer) return res.status(400).json({ error: 'Image required' });
-    const imageBase64 = imageBuffer.toString('base64');
+    // ponytail: accept JSON base64 (Vercel) or multipart buffer (local) — multer fails on Vercel serverless
+    const imageBase64 = req.body?.imageBase64 || req.file?.buffer?.toString('base64');
+    if (!imageBase64) return res.status(400).json({ error: 'Image required' });
     const prompt = `Analyze this plant/crop image and provide a detailed diagnosis in JSON format:
 {
   "disease": "exact disease name or Healthy",

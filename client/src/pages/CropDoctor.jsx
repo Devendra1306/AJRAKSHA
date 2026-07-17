@@ -15,38 +15,34 @@ export default function CropDoctor() {
   const [errorMsg, setErrorMsg] = useState('')
   const fileRef = useRef(null)
 
-  const processFile = async (file) => {
+  const processFile = (file) => {
     if (!file) return;
-    
-    // Create preview
+
     const reader = new FileReader();
-    reader.onload = (e) => setSelectedImage(e.target.result);
     reader.readAsDataURL(file);
+    reader.onload = async (e) => {
+      const dataUrl = e.target.result;
+      setSelectedImage(dataUrl);
+      setUploadState('analyzing');
+      setErrorMsg('');
 
-    setUploadState('analyzing');
-    setErrorMsg('');
-
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/ai/crop/analyze`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Analysis failed. Please try again.');
+      // ponytail: base64 JSON bypasses multer which fails on Vercel serverless
+      const base64 = dataUrl.split(',')[1];
+      try {
+        const response = await fetch(`${API_BASE_URL}/ai/crop/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: base64 }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Analysis failed. Please try again.');
+        setResultData(data);
+        setUploadState('result');
+      } catch (err) {
+        setErrorMsg(err.message);
+        setUploadState('error');
       }
-
-      const data = await response.json();
-      setResultData(data);
-      setUploadState('result');
-    } catch (err) {
-      console.error(err);
-      setErrorMsg(err.message || 'An error occurred during analysis');
-      setUploadState('error');
-    }
+    };
   };
 
   const handleFileChange = (e) => {
