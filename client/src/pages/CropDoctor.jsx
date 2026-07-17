@@ -1,19 +1,34 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'; // ponytail: relative URL works dev (Vite proxy) + prod (Vercel rewrite)
-
-const recentDiagnosis = [
-  { name: 'Tomato Late Blight', date: 'May 14, 2024', conf: '98%', img: null },
-  { name: 'Maize Leaf Blight', date: 'May 10, 2024', conf: '92%', img: null },
-  { name: 'Healthy Sample', date: 'May 02, 2024', conf: '100%', img: null },
-]
 
 export default function CropDoctor() {
   const [uploadState, setUploadState] = useState('idle') // idle | analyzing | result | error
   const [resultData, setResultData] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
+  const [reports, setReports] = useState([])
   const fileRef = useRef(null)
+
+  const fetchReports = async () => {
+    const token = localStorage.getItem('ajraksha_token');
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/crop/reports`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setReports(data);
+      }
+    } catch (err) {
+      console.error('Failed to load crop reports:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
 
   const processFile = (file) => {
     if (!file) return;
@@ -28,16 +43,23 @@ export default function CropDoctor() {
 
       // ponytail: base64 JSON bypasses multer which fails on Vercel serverless
       const base64 = dataUrl.split(',')[1];
+      const token = localStorage.getItem('ajraksha_token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       try {
         const response = await fetch(`${API_BASE_URL}/ai/crop/analyze`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({ imageBase64: base64 }),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Analysis failed. Please try again.');
         setResultData(data);
         setUploadState('result');
+        fetchReports(); // Refresh history log
       } catch (err) {
         setErrorMsg(err.message);
         setUploadState('error');
@@ -271,29 +293,53 @@ export default function CropDoctor() {
             </div>
 
             <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-              {recentDiagnosis.map((item, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 12,
-                  border: '1px solid transparent', cursor: 'pointer', transition: 'all 0.2s ease',
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#ffeae0'; e.currentTarget.style.borderColor = '#e0c0b1' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }}
-                >
-                  <div style={{
-                    width: 56, height: 56, borderRadius: 10, flexShrink: 0,
-                    background: 'linear-gradient(135deg, #fce3d9, #fff1eb)',
-                    border: '1px solid #e0c0b1',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: 'rgba(249,115,22,0.5)', fontSize: 28 }}>local_florist</span>
+              {reports.length === 0 ? (
+                <p style={{ fontSize: 13, color: '#8c7164', textAlign: 'center', padding: '20px 0' }}>No recent scans found.</p>
+              ) : (
+                reports.map((item, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 12,
+                    border: '1px solid transparent', cursor: 'pointer', transition: 'all 0.2s ease',
+                  }}
+                    onClick={() => {
+                      const fullData = item.treatment || {
+                        disease: item.disease,
+                        confidence: parseFloat(item.confidence),
+                        severity: item.severity,
+                        crop: item.crop,
+                        symptoms: item.symptoms,
+                      };
+                      setResultData(fullData);
+                      if (fullData.imageBase64) {
+                        setSelectedImage(`data:image/jpeg;base64,${fullData.imageBase64}`);
+                      } else {
+                        setSelectedImage(null);
+                      }
+                      setUploadState('result');
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#ffeae0'; e.currentTarget.style.borderColor = '#e0c0b1' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }}
+                  >
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+                      background: item.treatment?.imageBase64 ? `url(data:image/jpeg;base64,${item.treatment.imageBase64})` : 'linear-gradient(135deg, #fce3d9, #fff1eb)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      border: '1px solid #e0c0b1',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {!item.treatment?.imageBase64 && <span className="material-symbols-outlined" style={{ color: 'rgba(249,115,22,0.5)', fontSize: 28 }}>local_florist</span>}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h5 style={{ fontWeight: 700, color: '#251913', fontSize: 14 }}>{item.disease}</h5>
+                      <p style={{ fontSize: 12, color: '#584237', marginTop: 2 }}>
+                        {new Date(item.created_at).toLocaleDateString()} • {Math.round(item.confidence)}% Conf.
+                      </p>
+                    </div>
+                    <span className="material-symbols-outlined" style={{ color: '#f97316', fontSize: 18, opacity: 0 }} className="chevron">chevron_right</span>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <h5 style={{ fontWeight: 700, color: '#251913', fontSize: 14 }}>{item.name}</h5>
-                    <p style={{ fontSize: 12, color: '#584237', marginTop: 2 }}>{item.date} • {item.conf} Conf.</p>
-                  </div>
-                  <span className="material-symbols-outlined" style={{ color: '#f97316', fontSize: 18, opacity: 0 }} className="chevron">chevron_right</span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
 
             <button style={{

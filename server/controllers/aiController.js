@@ -117,14 +117,52 @@ exports.analyzeCrop = async (req, res, next) => {
     const result = await chatWithVision({ text: prompt, imageBase64 });
     const parsed = JSON.parse(result.match(/{[\s\S]*}/)?.[0] || result);
     if (req.user) {
+      // ponytail: save the imageBase64 inside the treatment JSON so we can display it later
+      parsed.imageBase64 = imageBase64;
+      
+      // Save report
       await query(
         `INSERT INTO crop_reports (user_id, disease, confidence, severity, crop, symptoms, treatment)
          VALUES ($1,$2,$3,$4,$5,$6,$7)`,
         [req.user.id, parsed.disease, parsed.confidence, parsed.severity, parsed.crop,
          parsed.symptoms, JSON.stringify(parsed)]
       );
+
+      // Create farm diary entry
+      await query(
+        `INSERT INTO farm_diary (user_id, type, description, crop, date)
+         VALUES ($1, $2, $3, $4, CURRENT_DATE)`,
+        [
+          req.user.id,
+          'activity',
+          `Crop Diagnosis: ${parsed.disease} (${parsed.severity} severity)`,
+          parsed.crop
+        ]
+      ).catch(e => console.error('Failed to log diary entry:', e.message));
+
+      // Create notification entry
+      await query(
+        `INSERT INTO notifications (user_id, title, message, type)
+         VALUES ($1, $2, $3, $4)`,
+        [
+          req.user.id,
+          `New Crop Diagnosis: ${parsed.disease}`,
+          `A scan for your ${parsed.crop} detected ${parsed.disease} with ${parsed.confidence}% confidence.`,
+          'crop'
+        ]
+      ).catch(e => console.error('Failed to log notification:', e.message));
     }
     res.json(parsed);
+  } catch (err) { next(err); }
+};
+
+exports.getCropReports = async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT * FROM crop_reports WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50`,
+      [req.user.id]
+    );
+    res.json(rows);
   } catch (err) { next(err); }
 };
 
