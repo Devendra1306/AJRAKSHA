@@ -13,5 +13,6 @@ router.post('/yield/predict', predictYield);
 router.post('/pest/identify', upload.single('image'), identifyPest);
 router.post('/chat', sendChatMessage);
 router.post('/irrigation', irrigationAdvice);
+router.get('/test', (req, res) => res.json({ message: 'AI route is working!' }));
 
 module.exports = router;
